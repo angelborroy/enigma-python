@@ -10,18 +10,18 @@ This is not a brute-force exercise. The combined key space is far too large for 
 
 ## Known machine settings
 
-| Parameter | Value |
-|---|---|
+| Parameter               | Value                                      |
+| ----------------------- | ------------------------------------------ |
 | Rotor selection & order | `I` (left) · `IV` (middle) · `III` (right) |
-| Reflector | `B` |
+| Reflector               | `B`                                        |
 
 ## Unknown parameters
 
-| Parameter | Notes |
-|---|---|
-| Initial rotor positions | 3 letters (A–Z each) |
+| Parameter                    | Notes                |
+| ---------------------------- | -------------------- |
+| Initial rotor positions      | 3 letters (A–Z each) |
 | Ring settings (Ringstellung) | 3 letters (A–Z each) |
-| Plugboard pairs | Between 5 and 10 pairs (exact number unknown) |
+| Plugboard pairs              | Exactly 7 pairs      |
 
 > Important: Ring settings are *not* trivially AAA. Positions and ring settings interact: you must account for this in your analysis.
 
@@ -37,14 +37,21 @@ PUONV TZAZUUK
 
 Spaces reflect original word boundaries and are not encrypted.
 
+## Structural Hint (Crib)
+
+The **first** word of the plaintext is **`WEATHER`**.
+
+This crib is at a known position (the very beginning of the message).
+Use it carefully: Enigma never encrypts a letter to itself.
+
 ## The plaintext
 
 The intercepted message is written in **English**. It contains no digits or punctuation, only letters and the spaces visible above. The content is a routine military communication; it does not concern cryptography or the Enigma machine itself.
 
 ## What you may use
 
-- The provided `enigma.py`: import and use it directly in your attack script (`from enigma import EnigmaMachine`)
-- Any Python standard-library module
-- Third-party packages (`numpy`, `scipy`, etc.) are permitted as utilities
+* The provided `enigma.py`: import and use it directly in your attack script (`from enigma import EnigmaMachine`)
+* Any Python standard-library module
+* Third-party packages (`numpy`, `scipy`, etc.) are permitted as utilities
 
-*The original Enigma was not broken by computing power alone. It was broken by careful reasoning about the machine's structural weaknesses. Your approach should reflect the same principle.*
+*The original Enigma was not broken by computing power alone. It was broken by careful reasoning about the machine structural weaknesses. Your approach should reflect the same principle.*
