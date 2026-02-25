@@ -13,6 +13,7 @@ This repository is structured as a self-contained learning environment:
 ```
 enigma-classroom/
 ├── enigma.py                    # Core machine implementation
+├── enigma_solver.py             # Crib attack on Enigma
 ├── examples/
 │   └── demo.py                  # Usage examples (encrypt, decrypt, custom keys)
 ├── docs/
