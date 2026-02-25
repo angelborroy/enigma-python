@@ -92,3 +92,100 @@ Rotors: `I`, `II`, `III`, `IV`, `V`
 Reflectors: `B`, `C`
 
 All wiring data is taken from the historical Wehrmacht/Luftwaffe Enigma I specification.
+
+## Cryptanalysis workshop — breaking the challenge
+
+`enigma_solver.py` is a guided starting point for solving the cryptanalysis
+challenge in [`docs/sample_challenge.md`](docs/sample_challenge.md).
+It implements the three-phase crib attack that Bletchley Park pioneered,
+using `enigma.py` from this repository.
+
+### How the attack works
+
+A **crib** is a fragment of known (or strongly guessed) plaintext.
+Because the first word of the intercepted message is `WEATHER`, each
+ciphertext letter at that position satisfies the equation
+
+```
+stecker[ c_i ]  =  C_i( stecker[ p_i ] )
+```
+
+where `C_i` is the rotor core at offset *i* and `stecker` is the plugboard.
+Seven such equations over-constrain the plugboard enough that almost every
+offset triple can be discarded in microseconds via backtracking.
+
+| Phase | What it does | Key technique |
+|-------|-------------|---------------|
+| **0** | Pre-compute all 17,576 rotor cores (no plugboard, ring = AAA) | Indexed lookup table |
+| **1** | For each offset triple, solve the 7 crib equations | Constraint backtracking |
+| **2** | Decrypt the message prefix; keep candidates that look like English | Dictionary filter |
+| **3** | Complete the plugboard; rank survivors | N-gram scoring |
+
+### Getting started
+
+No installation required. Copy `enigma_solver.py` into the repository root
+alongside `enigma.py` and run it:
+
+```bash
+git clone https://github.com/angelborroy/enigma-python.git
+cd enigma-python
+python enigma_solver.py
+```
+
+The script will immediately pre-compute the core table (Phase 0) and then
+stop with a `NotImplementedError` at the first function you need to write.
+
+### Repository layout (updated)
+
+```
+enigma-python/
+├── enigma.py                    # Core machine implementation
+├── enigma_solver.py             # << Crib-attack skeleton (start here)
+├── examples/
+│   └── demo.py                  # Usage examples (encrypt, decrypt, custom keys)
+├── docs/
+│   ├── enigma_architecture.md   # Deep-dive on machine internals
+│   └── sample_challenge.md      # Cryptanalysis challenge (the ciphertext to crack)
+├── .gitignore
+├── LICENSE
+└── README.md
+```
+
+### What you need to implement
+
+The skeleton runs out of the box and fails at the first incomplete function.
+Work through the `TODO` markers in order:
+
+| # | Function | Difficulty | Concept practised |
+|---|----------|-----------|-------------------|
+| 1 | `assign(a, b)` inside `solve_plugboard` | ★☆☆ | Plugboard as involution |
+| 2 | `looks_like_english()` | ★☆☆ | Heuristic language detection |
+| 3 | `build_core_table()` with real ring settings | ★★☆ | Effective offset = position − ring |
+| 4 | Correct rotor stepping inside `phase1()` | ★★☆ | Double-stepping anomaly |
+| 5 | `complete_plugboard()` with hill-climbing | ★★★ | Local-search optimisation |
+| 6 | `ngram_score()` with real log-probabilities | ★★★ | Statistical language modelling |
+
+> **Tip — start small.** Implement `assign()` first (10 lines).
+> Once Phase 1 produces candidates, move to Phase 2, and so on.
+> Each phase is independently testable.
+
+### Verifying your solution
+
+When the correct key is recovered, re-encrypting the recovered plaintext
+must reproduce the original ciphertext exactly:
+
+```python
+from enigma import EnigmaMachine
+
+machine = EnigmaMachine(
+    rotor_names   = ["I", "IV", "III"],
+    positions     = [...],        # recovered positions
+    ring_settings = [...],        # recovered ring settings
+    plugboard     = [...],        # recovered plugboard pairs
+    reflector     = "B",
+)
+plaintext  = machine.encrypt(CIPHERTEXT)
+machine.reset([...])              # same positions
+assert machine.encrypt(plaintext) == CIPHERTEXT
+print(plaintext)                  # WEATHER ...
+```
