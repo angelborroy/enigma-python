@@ -136,22 +136,6 @@ python enigma_solver.py
 The script will immediately pre-compute the core table (Phase 0) and then
 stop with a `NotImplementedError` at the first function you need to write.
 
-### Repository layout (updated)
-
-```
-enigma-python/
-├── enigma.py                    # Core machine implementation
-├── enigma_solver.py             # << Crib-attack skeleton (start here)
-├── examples/
-│   └── demo.py                  # Usage examples (encrypt, decrypt, custom keys)
-├── docs/
-│   ├── enigma_architecture.md   # Deep-dive on machine internals
-│   └── sample_challenge.md      # Cryptanalysis challenge (the ciphertext to crack)
-├── .gitignore
-├── LICENSE
-└── README.md
-```
-
 ### What you need to implement
 
 The skeleton runs out of the box and fails at the first incomplete function.
